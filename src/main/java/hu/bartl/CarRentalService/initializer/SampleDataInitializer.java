@@ -1,5 +1,6 @@
 package hu.bartl.CarRentalService.initializer;
 
+import hu.bartl.CarRentalService.client.UsagePermissionServiceClientMock;
 import hu.bartl.CarRentalService.model.Car;
 import hu.bartl.CarRentalService.model.Type;
 import hu.bartl.CarRentalService.repository.CarRepository;
@@ -13,11 +14,15 @@ import org.springframework.stereotype.Component;
 public class SampleDataInitializer implements ApplicationListener<ApplicationReadyEvent> {
 
     public static final int CARS_PER_TYPE = 25;
+
     @Autowired
     private CarRepository carRepository;
 
     @Autowired
     private TypeRepository typeRepository;
+
+    @Autowired
+    private UsagePermissionServiceClientMock permissionServiceClient;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
@@ -53,5 +58,8 @@ public class SampleDataInitializer implements ApplicationListener<ApplicationRea
         t4.setManufacturer("Toyota");
         t4.setModel("Yaris");
         typeRepository.save(t4);
+
+        permissionServiceClient.permitType(t1);
+        permissionServiceClient.permitType(t3);
     }
 }
