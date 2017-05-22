@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 @RestController
 @RequestMapping("/api/cars")
 public class CarController {
@@ -27,6 +29,7 @@ public class CarController {
     }
 
     @PostMapping("/{id}/bookings")
+    @ResponseStatus(CREATED)
     public Car bookCar(@PathVariable String id, @RequestBody BookingDto bookingDto) {
         return carService.bookCar(id, bookingDto);
     }

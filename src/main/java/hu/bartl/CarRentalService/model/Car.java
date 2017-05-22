@@ -1,11 +1,9 @@
 package hu.bartl.CarRentalService.model;
 
 
-import org.hibernate.annotations.Fetch;
-import org.springframework.data.repository.cdi.Eager;
-
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Car {
@@ -44,5 +42,31 @@ public class Car {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Car car = (Car) o;
+        return Objects.equals(id, car.id) &&
+                Objects.equals(type, car.type) &&
+                Objects.equals(bookings, car.bookings) &&
+                Objects.equals(description, car.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type, bookings, description);
+    }
+
+    @Override
+    public String toString() {
+        return "Car{" +
+                "id='" + id + '\'' +
+                ", type=" + type +
+                ", bookings=" + bookings +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

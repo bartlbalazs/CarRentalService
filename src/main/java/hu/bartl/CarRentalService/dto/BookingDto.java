@@ -1,12 +1,16 @@
 package hu.bartl.CarRentalService.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import hu.bartl.CarRentalService.model.Usage;
 
 import java.time.LocalDateTime;
 
 public class BookingDto {
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime start;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime end;
     private Usage usage;
     private String customerName;
