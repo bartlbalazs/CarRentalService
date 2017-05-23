@@ -15,7 +15,7 @@ public class Car {
     @ManyToOne
     private Type type;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Booking> bookings;
 
     private String description;

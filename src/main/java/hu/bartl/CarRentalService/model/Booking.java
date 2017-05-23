@@ -1,5 +1,7 @@
 package hu.bartl.CarRentalService.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -15,6 +17,7 @@ public class Booking {
     private String bookingId;
 
     @ManyToOne
+    @JsonIgnore
     private Car car;
     private LocalDateTime start;
     private LocalDateTime end;
@@ -91,7 +94,7 @@ public class Booking {
     public String toString() {
         return "Booking{" +
                 "bookingId='" + bookingId + '\'' +
-                ", car=" + car +
+                ", car=" + (car != null ? car.getCarId() : null) +
                 ", start=" + start +
                 ", end=" + end +
                 ", usage=" + usage +

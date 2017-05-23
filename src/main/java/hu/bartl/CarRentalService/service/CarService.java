@@ -12,14 +12,17 @@ import hu.bartl.CarRentalService.repository.BookingRepository;
 import hu.bartl.CarRentalService.repository.CarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class CarService {
 
+    public static final PageRequest TOP = new PageRequest(0, 1);
     @Autowired
     private CarRepository carRepository;
 
@@ -46,7 +49,7 @@ public class CarService {
             throw new BadRequestException("Car#" + carId + "is not allowed to book for foreign usage.");
         }
 
-        if (previousBookingIsNotEnded(car, bookingDto.getStart())) {
+        if (previousBookingIsNotEnded(carId, bookingDto.getStart())) {
             throw new BadRequestException("Car#" + carId + "is not available on the selected date.");
         }
 
@@ -56,13 +59,17 @@ public class CarService {
 
         Booking booking = conversionService.convert(bookingDto, Booking.class);
         booking.setCar(car);
-        bookingRepository.save(booking);
-
+        car.getBookings().add(booking);
+        carRepository.save(car);
         return car;
     }
 
-    private boolean previousBookingIsNotEnded(Car car, LocalDateTime start) {
-        return false;
+    private boolean previousBookingIsNotEnded(String carId, LocalDateTime start) {
+        List<Booking> previousBookings = bookingRepository.findBookingBefore(carId, start, TOP);
+        if (previousBookings.size() == 0l) {
+            return false;
+        }
+        return previousBookings.get(0).getEnd().isAfter(start);
     }
 
     private boolean nextBookingIsTooEarly(Car car, LocalDateTime end) {

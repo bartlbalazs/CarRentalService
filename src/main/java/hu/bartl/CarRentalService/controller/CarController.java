@@ -47,8 +47,11 @@ public class CarController {
 
     @PostMapping("/{id}/bookings")
     @ResponseStatus(CREATED)
-    public Car bookCar(@PathVariable String id, @RequestBody BookingDto bookingDto) {
-        return carService.bookCar(id, bookingDto);
+    public CarResource bookCar(@PathVariable String id, @RequestBody BookingDto bookingDto) {
+        Car car = carService.bookCar(id, bookingDto);
+        CarResource carResource = conversionService.convert(car, CarResource.class);
+        addSelfLink(carResource);
+        return carResource;
     }
 
     private void addSelfLink(CarResource carResource) {
