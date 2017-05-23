@@ -37,7 +37,7 @@ public class CarService {
     }
 
     public Car findCar(String id) {
-        return carRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Car with id: " + id + "not found."));
+        return carRepository.findByCarId(id).orElseThrow(() -> new ResourceNotFoundException("Car with id: " + id + "not found."));
     }
 
     public Car bookCar(String carId, BookingDto bookingDto) {

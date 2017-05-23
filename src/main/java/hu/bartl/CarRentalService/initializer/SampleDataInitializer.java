@@ -32,7 +32,7 @@ public class SampleDataInitializer implements ApplicationListener<ApplicationRea
                 Car c = new Car();
                 c.setType(type);
                 Car savedCar = carRepository.save(c);
-                savedCar.setDescription("Sample description for Car#" + savedCar.getId());
+                savedCar.setDescription("Sample description for Car#" + savedCar.getCarId());
                 carRepository.save(c);
             }
         });

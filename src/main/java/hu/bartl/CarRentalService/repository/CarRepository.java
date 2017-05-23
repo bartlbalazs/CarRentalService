@@ -12,5 +12,5 @@ public interface CarRepository extends CrudRepository<Car, String> {
 
     List<CarShortInfo> findBy();
 
-    Optional<Car> findById(String id);
+    Optional<Car> findByCarId(String id);
 }

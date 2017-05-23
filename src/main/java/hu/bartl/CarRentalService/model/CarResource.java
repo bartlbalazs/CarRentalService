@@ -1,23 +1,15 @@
 package hu.bartl.CarRentalService.model;
 
 
-import javax.persistence.*;
+import org.springframework.hateoas.ResourceSupport;
+
 import java.util.List;
-import java.util.Objects;
 
-@Entity
-public class Car {
+public class CarResource extends ResourceSupport {
 
-    @Id
-    @GeneratedValue
     private String carId;
-
-    @ManyToOne
     private Type type;
-
-    @OneToMany(fetch = FetchType.EAGER)
     private List<Booking> bookings;
-
     private String description;
 
     public String getCarId() {
@@ -53,24 +45,8 @@ public class Car {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Car car = (Car) o;
-        return Objects.equals(carId, car.carId) &&
-                Objects.equals(type, car.type) &&
-                Objects.equals(bookings, car.bookings) &&
-                Objects.equals(description, car.description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(carId, type, bookings, description);
-    }
-
-    @Override
     public String toString() {
-        return "Car{" +
+        return "CarResource{" +
                 "carId='" + carId + '\'' +
                 ", type=" + type +
                 ", bookings=" + bookings +

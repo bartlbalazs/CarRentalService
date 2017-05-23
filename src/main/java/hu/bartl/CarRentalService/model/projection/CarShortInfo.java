@@ -4,7 +4,7 @@ import hu.bartl.CarRentalService.model.Type;
 
 public interface CarShortInfo {
 
-    String getId();
+    String getCarId();
 
     Type getType();
 }

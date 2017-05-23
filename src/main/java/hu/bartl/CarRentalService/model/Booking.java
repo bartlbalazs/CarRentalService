@@ -12,7 +12,7 @@ public class Booking {
 
     @Id
     @GeneratedValue
-    private String id;
+    private String bookingId;
 
     @ManyToOne
     private Car car;
@@ -21,12 +21,12 @@ public class Booking {
     private Usage usage;
     private String customerName;
 
-    public String getId() {
-        return id;
+    public String getBookingId() {
+        return bookingId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
     }
 
     public Car getCar() {
@@ -74,7 +74,7 @@ public class Booking {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Booking booking = (Booking) o;
-        return Objects.equals(id, booking.id) &&
+        return Objects.equals(bookingId, booking.bookingId) &&
                 Objects.equals(car, booking.car) &&
                 Objects.equals(start, booking.start) &&
                 Objects.equals(end, booking.end) &&
@@ -84,13 +84,13 @@ public class Booking {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, car, start);
+        return Objects.hash(bookingId, car, start);
     }
 
     @Override
     public String toString() {
         return "Booking{" +
-                "id='" + id + '\'' +
+                "bookingId='" + bookingId + '\'' +
                 ", car=" + car +
                 ", start=" + start +
                 ", end=" + end +
