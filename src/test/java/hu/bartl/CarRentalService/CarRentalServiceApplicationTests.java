@@ -3,7 +3,10 @@ package hu.bartl.CarRentalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.bartl.CarRentalService.model.Booking;
 import hu.bartl.CarRentalService.model.Car;
+import hu.bartl.CarRentalService.model.Type;
 import hu.bartl.CarRentalService.repository.CarRepository;
+import hu.bartl.CarRentalService.repository.TypeRepository;
+import hu.bartl.CarRentalService.service.CarService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class CarRentalServiceApplicationTests {
 
+    private static final String SAMPLE_CAR_ID = "1";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -35,7 +40,13 @@ public class CarRentalServiceApplicationTests {
     private CarRepository carRepository;
 
     @Autowired
+    private TypeRepository typeRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private CarService carService;
 
     @Test
     public void shouldListAllCars() throws Exception {
@@ -55,7 +66,7 @@ public class CarRentalServiceApplicationTests {
     @Test
     @DirtiesContext
     public void shouldBookCarWhenItsFreeToBooking() throws Exception {
-        Car car = carRepository.findOne("1");
+        Car car = carRepository.findOne(SAMPLE_CAR_ID);
         Booking booking = bookingAcrossYears(2015, 2016);
         car.getBookings().add(booking);
         booking.setCar(car);
@@ -74,7 +85,7 @@ public class CarRentalServiceApplicationTests {
     @Test
     @DirtiesContext
     public void shouldThrowBadRequestExceptionWhenPreviousBookingIsNotEnded() throws Exception {
-        Car car = carRepository.findOne("1");
+        Car car = carRepository.findOne(SAMPLE_CAR_ID);
         Booking booking = bookingAcrossYears(2016, 2018);
         car.getBookings().add(booking);
         booking.setCar(car);
@@ -92,7 +103,7 @@ public class CarRentalServiceApplicationTests {
     @Test
     @DirtiesContext
     public void shouldThrowBadRequestExceptionWhenNextBookingIsTooEarly() throws Exception {
-        Car car = carRepository.findOne("1");
+        Car car = carRepository.findOne(SAMPLE_CAR_ID);
         Booking previous = bookingAcrossYears(2013, 2014);
         previous.setCar(car);
         Booking next = bookingAcrossYears(2018, 2020);
@@ -110,10 +121,35 @@ public class CarRentalServiceApplicationTests {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DirtiesContext
+    public void shouldThrowExceptionWhenForeignUseIsNotPermitted() throws Exception {
+        Type unsupportedType = getUnsupportedType();
+        Car car = carRepository.findOne(SAMPLE_CAR_ID);
+        car.setType(unsupportedType);
+        carRepository.save(car);
+
+        String bookingDtoString = "{\"start\":\"2017-01-01T10:00:00\"," +
+                "\"end\":\"2019-02-02T10:00:00\"," +
+                "\"usage\":\"FOREIGN\"," +
+                "\"customerName\":\"Sample User\"}";
+
+        mockMvc.perform(post("/api/cars/1/bookings").content(bookingDtoString).contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+    }
+
     private Booking bookingAcrossYears(int startYear, int endYear) {
         Booking booking = new Booking();
         booking.setStart(LocalDateTime.of(startYear, 1, 1, 0, 0));
         booking.setEnd(LocalDateTime.of(endYear, 1, 1, 0, 0));
         return booking;
+    }
+
+    private Type getUnsupportedType() {
+        Type type = new Type();
+        type.setManufacturer("Unsupported Model");
+        type.setModel("Unsupported Manufacturer");
+        return typeRepository.save(type);
     }
 }

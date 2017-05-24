@@ -45,7 +45,7 @@ public class CarService {
 
     public Car bookCar(String carId, BookingDto bookingDto) {
         Car car = findCar(carId);
-        if (bookingDto.getUsage() == Usage.FOREIGN && usagePermissionServiceClient.isForeignUsagePermitted(car.getType())) {
+        if (bookingDto.getUsage() == Usage.FOREIGN && !usagePermissionServiceClient.isForeignUsagePermitted(car.getType())) {
             throw new BadRequestException("Car#" + carId + "is not allowed to book for foreign usage.");
         }
 
