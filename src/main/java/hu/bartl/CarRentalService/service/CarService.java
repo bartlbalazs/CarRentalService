@@ -53,7 +53,7 @@ public class CarService {
             throw new BadRequestException("Car#" + carId + "is not available on the selected date.");
         }
 
-        if (nextBookingIsTooEarly(car, bookingDto.getEnd())) {
+        if (nextBookingIsTooEarly(car.getCarId(), bookingDto.getStart(), bookingDto.getEnd())) {
             throw new BadRequestException("Car#" + carId + "is not available on the selected date.");
         }
 
@@ -72,7 +72,11 @@ public class CarService {
         return previousBookings.get(0).getEnd().isAfter(start);
     }
 
-    private boolean nextBookingIsTooEarly(Car car, LocalDateTime end) {
-        return false;
+    private boolean nextBookingIsTooEarly(String carId, LocalDateTime start, LocalDateTime end) {
+        List<Booking> nextBookings = bookingRepository.findBookingAfter(carId, start, TOP);
+        if (nextBookings.size() == 0l) {
+            return false;
+        }
+        return nextBookings.get(0).getStart().isBefore(end);
     }
 }

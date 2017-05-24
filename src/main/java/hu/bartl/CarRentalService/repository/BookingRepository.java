@@ -12,4 +12,7 @@ public interface BookingRepository extends CrudRepository<Booking, String> {
 
     @Query(("select b from Booking b where b.car.carId = ?1 and b.start <= ?2 order by b.start desc"))
     List<Booking> findBookingBefore(String carId, LocalDateTime date, Pageable pageable);
+
+    @Query(("select b from Booking b where b.car.carId = ?1 and b.start >= ?2 order by b.start"))
+    List<Booking> findBookingAfter(String carId, LocalDateTime date, Pageable pageable);
 }

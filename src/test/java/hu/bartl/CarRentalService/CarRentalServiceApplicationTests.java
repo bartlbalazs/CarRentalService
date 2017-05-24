@@ -89,6 +89,27 @@ public class CarRentalServiceApplicationTests {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DirtiesContext
+    public void shouldThrowBadRequestExceptionWhenNextBookingIsTooEarly() throws Exception {
+        Car car = carRepository.findOne("1");
+        Booking previous = bookingAcrossYears(2013, 2014);
+        previous.setCar(car);
+        Booking next = bookingAcrossYears(2018, 2020);
+        next.setCar(car);
+        car.getBookings().add(previous);
+        car.getBookings().add(next);
+        carRepository.save(car);
+
+        String bookingDtoString = "{\"start\":\"2017-01-01T10:00:00\"," +
+                "\"end\":\"2019-02-02T10:00:00\"," +
+                "\"usage\":\"DOMESTIC\"," +
+                "\"customerName\":\"Sample User\"}";
+
+        mockMvc.perform(post("/api/cars/1/bookings").content(bookingDtoString).contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
     private Booking bookingAcrossYears(int startYear, int endYear) {
         Booking booking = new Booking();
         booking.setStart(LocalDateTime.of(startYear, 1, 1, 0, 0));

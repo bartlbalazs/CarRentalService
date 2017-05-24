@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/api/cars")
@@ -27,7 +28,7 @@ public class CarController {
     @Autowired
     private ConversionService conversionService;
 
-    @GetMapping
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     public Collection<CarResource> listCars() {
         Collection<CarShortInfo> carList = carService.getCarList();
         List<CarResource> carResources = carList.stream()
@@ -37,7 +38,7 @@ public class CarController {
         return carResources;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
     public CarResource findCar(@PathVariable String id) {
         Car car = carService.findCar(id);
         CarResource carResource = conversionService.convert(car, CarResource.class);
@@ -45,7 +46,7 @@ public class CarController {
         return carResource;
     }
 
-    @PostMapping("/{id}/bookings")
+    @PostMapping(value = "/{id}/bookings", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ResponseStatus(CREATED)
     public CarResource bookCar(@PathVariable String id, @RequestBody BookingDto bookingDto) {
         Car car = carService.bookCar(id, bookingDto);
