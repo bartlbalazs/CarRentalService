@@ -23,6 +23,7 @@ import java.util.List;
 public class CarService {
 
     public static final PageRequest TOP = new PageRequest(0, 1);
+
     @Autowired
     private CarRepository carRepository;
 
@@ -45,6 +46,15 @@ public class CarService {
 
     public Car bookCar(String carId, BookingDto bookingDto) {
         Car car = findCar(carId);
+        validateBookingRequest(carId, bookingDto, car);
+        Booking booking = conversionService.convert(bookingDto, Booking.class);
+        booking.setCar(car);
+        car.getBookings().add(booking);
+        carRepository.save(car);
+        return car;
+    }
+
+    private void validateBookingRequest(String carId, BookingDto bookingDto, Car car) {
         if (bookingDto.getUsage() == Usage.FOREIGN && !usagePermissionServiceClient.isForeignUsagePermitted(car.getType())) {
             throw new BadRequestException("Car#" + carId + "is not allowed to book for foreign usage.");
         }
@@ -56,12 +66,6 @@ public class CarService {
         if (nextBookingIsTooEarly(car.getCarId(), bookingDto.getStart(), bookingDto.getEnd())) {
             throw new BadRequestException("Car#" + carId + "is not available on the selected date.");
         }
-
-        Booking booking = conversionService.convert(bookingDto, Booking.class);
-        booking.setCar(car);
-        car.getBookings().add(booking);
-        carRepository.save(car);
-        return car;
     }
 
     private boolean previousBookingIsNotEnded(String carId, LocalDateTime start) {
